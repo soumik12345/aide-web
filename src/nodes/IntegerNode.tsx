@@ -27,7 +27,7 @@ export function IntegerNodeComponent({ data }: NodeProps<IntegerNode>) {
           className="integer-input"
         />
       </div>
-      <Handle type="source" position={Position.Bottom} />
+      <Handle type="source" position={Position.Right} />
     </div>
   );
 }
