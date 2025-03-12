@@ -3,6 +3,7 @@ import { DragEvent } from 'react';
 export type NodeData = {
   type: string;
   label: string;
+  value?: number;
 };
 
 type SidebarProps = {
@@ -17,11 +18,29 @@ const Sidebar = ({ onDragStart }: SidebarProps) => {
     { type: 'divide', label: 'Divide' }
   ];
 
+  const objectNodes = [
+    { type: 'integer', label: 'Integer', value: 0 }
+  ];
+
   return (
     <aside className="sidebar">
       <div className="sidebar-header">Operations</div>
       <div className="sidebar-nodes">
         {operationNodes.map((node) => (
+          <div
+            key={node.type}
+            className="sidebar-node"
+            onDragStart={(event) => onDragStart(event, node)}
+            draggable
+          >
+            {node.label}
+          </div>
+        ))}
+      </div>
+      
+      <div className="section-title">Objects</div>
+      <div className="sidebar-nodes">
+        {objectNodes.map((node) => (
           <div
             key={node.type}
             className="sidebar-node"

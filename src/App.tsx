@@ -50,7 +50,7 @@ export default function App() {
 
       try {
         const dataStr = event.dataTransfer.getData('application/reactflow');
-        const { type, label } = JSON.parse(dataStr) as NodeData;
+        const { type, label, value } = JSON.parse(dataStr) as NodeData;
 
         const position = {
           x: event.clientX - reactFlowBounds.left,
@@ -61,7 +61,7 @@ export default function App() {
           id: getId(),
           type,
           position,
-          data: { label },
+          data: { label, ...(value !== undefined ? { value } : {}) },
         } as AppNode;
 
         setNodes((nds) => nds.concat(newNode));

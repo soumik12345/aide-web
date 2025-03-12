@@ -62,3 +62,25 @@ code {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
 }
+
+.section-title {
+  font-weight: bold;
+  font-size: 16px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.integer-node-input {
+  margin: 5px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.integer-input {
+  width: 80%;
+  padding: 5px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  text-align: center;
+}
