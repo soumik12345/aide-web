@@ -10,6 +10,7 @@ import {
   type OnConnect,
   ReactFlowProvider,
   getConnectedEdges,
+  useReactFlow,
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
@@ -22,10 +23,12 @@ import { AppNode } from './nodes/types';
 let id = 0;
 const getId = () => `node-${id++}`;
 
-export default function App() {
+// The Flow component will have access to the ReactFlow instance
+function Flow() {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const reactFlowInstance = useReactFlow();
   
   const onConnect: OnConnect = useCallback(
     (connection) => setEdges((edges) => addEdge(connection, edges)),
@@ -59,10 +62,11 @@ export default function App() {
 
         const { type, label, value } = JSON.parse(dataStr) as NodeData;
 
-        const position = {
-          x: event.clientX - reactFlowBounds.left,
-          y: event.clientY - reactFlowBounds.top,
-        };
+        // Calculate the drop position in the viewport
+        const position = reactFlowInstance.screenToFlowPosition({
+          x: event.clientX,
+          y: event.clientY,
+        });
 
         const newNode = {
           id: getId(),
@@ -76,7 +80,7 @@ export default function App() {
         console.error('Error creating node:', error);
       }
     },
-    [setNodes]
+    [setNodes, reactFlowInstance]
   );
 
   const onKeyDown = useCallback(
@@ -108,28 +112,37 @@ export default function App() {
   );
 
   return (
+    <>
+      <Sidebar onDragStart={onDragStart} />
+      <div className="reactflow-wrapper" ref={reactFlowWrapper}>
+        <ReactFlow
+          nodes={nodes}
+          nodeTypes={nodeTypes}
+          onNodesChange={onNodesChange}
+          edges={edges}
+          edgeTypes={edgeTypes}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          onDragOver={onDragOver}
+          onDrop={onDrop}
+          onKeyDown={onKeyDown}
+          fitView
+        >
+          <Background />
+          <MiniMap />
+          <Controls />
+        </ReactFlow>
+      </div>
+    </>
+  );
+}
+
+// The main App component which wraps the Flow component with ReactFlowProvider
+export default function App() {
+  return (
     <div className="app-container">
       <ReactFlowProvider>
-        <Sidebar onDragStart={onDragStart} />
-        <div className="reactflow-wrapper" ref={reactFlowWrapper}>
-          <ReactFlow
-            nodes={nodes}
-            nodeTypes={nodeTypes}
-            onNodesChange={onNodesChange}
-            edges={edges}
-            edgeTypes={edgeTypes}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            onDragOver={onDragOver}
-            onDrop={onDrop}
-            onKeyDown={onKeyDown}
-            fitView
-          >
-            <Background />
-            <MiniMap />
-            <Controls />
-          </ReactFlow>
-        </div>
+        <Flow />
       </ReactFlowProvider>
     </div>
   );
