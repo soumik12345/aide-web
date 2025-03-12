@@ -47,10 +47,16 @@ export default function App() {
       event.preventDefault();
 
       const reactFlowBounds = reactFlowWrapper.current?.getBoundingClientRect();
-      if (!reactFlowBounds || !event.dataTransfer) return;
+      if (!reactFlowBounds) return;
 
       try {
+        // Make sure we can get the data before proceeding
         const dataStr = event.dataTransfer.getData('application/reactflow');
+        if (!dataStr) {
+          console.error('No data found in drop event');
+          return;
+        }
+
         const { type, label, value } = JSON.parse(dataStr) as NodeData;
 
         const position = {
